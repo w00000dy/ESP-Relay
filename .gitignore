@@ -4,3 +4,6 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+lib
+include
+node_modules
