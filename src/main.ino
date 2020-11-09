@@ -5,13 +5,14 @@
 #include <index.h>
 
 #define TOGGLE_TIME 250
+#define MAX_RELAYS 32
 
-DynamicJsonDocument relays(1024);
+DynamicJsonDocument relays(2048);
 AsyncWebServer server(80);
 DNSServer dns;
 
-unsigned long toggleRelay[32];
-boolean switchRelay[32];
+unsigned long toggleRelay[MAX_RELAYS];
+boolean switchRelay[MAX_RELAYS];
 
 void notFound(AsyncWebServerRequest *request) { request->send(404, "text/plain", "Not found"); }
 
@@ -28,15 +29,27 @@ void setup() {
     }
 
     String data = f.readString();
-    Serial.println("Inhalt der geöffneten Datei:");
+    Serial.println("Content of file:");
     Serial.println(data);
     f.close();
     deserializeJson(relays, data);
+    Serial.println("Space: " + String(relays.memoryUsage()) + "/" + String(relays.capacity()));
+
+    // check if file is corrupted
+    for (size_t i = 0; i < relays.size(); i++) {
+        if (relays[i]["pin"].is<int>() == false || relays[i]["name"].is<char*>() == false) {
+            Serial.println("Error! File is corrupted. Deleting file.");
+            SPIFFS.remove("/relays.json");
+            Serial.println("Restarting...");
+            ESP.restart();
+        }
+        
+    }
 
     initializePins();
 
     AsyncWiFiManager wifiManager(&server, &dns);
-    wifiManager.autoConnect("ESP-Garage", "garage1234");
+    wifiManager.autoConnect("ESP-Relay");
 
     Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
@@ -88,11 +101,7 @@ void setup() {
 
     server.on("/info", HTTP_GET, [](AsyncWebServerRequest *request) {
         Serial.println("info");
-        StaticJsonDocument<128> info;
-        info["relays"]["Capacity"] = relays.capacity();
-        info["relays"]["Memory Usage"] = relays.memoryUsage();
-        info["info"]["Capacity"] = info.capacity();
-        info["info"]["Memory Usage"] = info.memoryUsage();
+        StaticJsonDocument<300> info;
         info["esp"]["flashChipSize"] = ESP.getFlashChipSize();
         info["esp"]["flashFreq"] = ESP.getFlashChipSpeed();
         info["esp"]["ChipId"] = ESP.getChipId();
@@ -101,6 +110,12 @@ void setup() {
         info["esp"]["MaxFreeBlockSize"] = ESP.getMaxFreeBlockSize();
         info["esp"]["SketchSize"] = ESP.getSketchSize();
         info["esp"]["SketchMD5"] = ESP.getSketchMD5();
+        info["relays"]["Capacity"] = relays.capacity();
+        info["relays"]["Memory Usage"] = relays.memoryUsage();
+        info["relays"]["currentRelays"] = relays.size();
+        info["relays"]["maxRelays"] = MAX_RELAYS;
+        info["info"]["Capacity"] = info.capacity();
+        info["info"]["Memory Usage"] = info.memoryUsage();
         String json;
         serializeJson(info, json);
         request->send(200, "application/json", json);
@@ -112,7 +127,7 @@ void setup() {
 }
 
 void handleRelays() {
-    for (size_t i = 0; i < sizeof(relays); i++) {
+    for (size_t i = 0; i < relays.size(); i++) {
         if (switchRelay[i] == true) {
             if (toggleRelay[i] > millis()) {
                 digitalWrite(relays[i]["pin"], HIGH);

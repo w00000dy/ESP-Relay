@@ -11,7 +11,7 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESP-Garage</title>
+    <title>ESP-Relay</title>
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <!-- Compiled and minified JavaScript -->
@@ -53,7 +53,7 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
         </div>
         <div id="settings" class="col s12" style="text-align: center;">
             <h1 class="center-align">Settings</h5>
-                <br>
+                <p id="space"><b>Space:</b> 0/0 Relays - 0/0 Bytes</p><br>
                 <div id="relayInput" class="row"
                     style="width: 800px; left: 50%; position: absolute; transform: translate(-50%);">
                     <div class="input-field col s9">
@@ -171,6 +171,7 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
     }
 
     function loadSettings() {
+        loadSpace();
         // Get settings from json
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/json', true);
@@ -184,16 +185,29 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
                     document.getElementById("relayName" + (index + 1)).value = element["name"];
                     document.getElementById("relayPin" + (index + 1)).value = element["pin"];
                 }
+                newRelayInput();
                 M.updateTextFields();
             }
         };
         xhr.send();
     }
 
+    function loadSpace() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/info', true);
+
+        xhr.onload = function () {
+            var json = JSON.parse(xhr.response);
+            document.getElementById("space").innerHTML = "<b>Space:</b> " + json["relays"]["currentRelays"] + "/" + json["relays"]["maxRelays"] + " Relays - " + json["relays"]["Memory Usage"] + "/" + json["relays"]["Capacity"] + " Bytes";
+        };
+
+        xhr.send();
+    }
+
     function saveSettings() {
         var data = [];
         for (let index = 0; index < (numRelays - 1); index++) {
-            var obj = { "name": document.getElementById("relayName" + (index + 1)).value, "pin": document.getElementById("relayPin" + (index + 1)).value };
+            var obj = { "name": document.getElementById("relayName" + (index + 1)).value, "pin": parseInt(document.getElementById("relayPin" + (index + 1)).value) };
             data[index] = obj;
         }
         console.log(data);
@@ -205,7 +219,7 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function () { // Call a function when the state changes.
             if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                // Request finished. Do processing here.
+                loadSpace();
             }
         }
         xhr.send("json=" + json);
