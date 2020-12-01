@@ -1,3 +1,6 @@
+## ESP-Relay version 0.3.0
+- added option to select relay type
+
 ## ESP-Relay version 0.2.0
 - added text that show used and available space
 - renamed titel of web-gui to "ESP-Relay"

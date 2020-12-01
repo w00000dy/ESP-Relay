@@ -1,7 +1,7 @@
 {
-  "name": "esp-garage",
-  "version": "1.0.0",
-  "description": "",
+  "name": "esp-relay",
+  "version": "0.3.0",
+  "description": "Control your relays over wifi using an esp8266 ",
   "main": "tools/cdata.js",
   "directories": {
     "lib": "lib",
