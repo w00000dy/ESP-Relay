@@ -37,13 +37,12 @@ void setup() {
 
     // check if file is corrupted
     for (size_t i = 0; i < relays.size(); i++) {
-        if (relays[i]["pin"].is<int>() == false || relays[i]["name"].is<char*>() == false) {
+        if (relays[i]["pin"].is<int>() == false || relays[i]["name"].is<char *>() == false) {
             Serial.println("Error! File is corrupted. Deleting file.");
             SPIFFS.remove("/relays.json");
             Serial.println("Restarting...");
             ESP.restart();
         }
-        
     }
 
     initializePins();
@@ -101,7 +100,7 @@ void setup() {
 
     server.on("/info", HTTP_GET, [](AsyncWebServerRequest *request) {
         Serial.println("info");
-        StaticJsonDocument<300> info;
+        StaticJsonDocument<350> info;
         info["esp"]["flashChipSize"] = ESP.getFlashChipSize();
         info["esp"]["flashFreq"] = ESP.getFlashChipSpeed();
         info["esp"]["ChipId"] = ESP.getChipId();
@@ -130,15 +129,31 @@ void handleRelays() {
     for (size_t i = 0; i < relays.size(); i++) {
         if (switchRelay[i] == true) {
             if (toggleRelay[i] > millis()) {
-                digitalWrite(relays[i]["pin"], HIGH);
+                if (relays[i]["Low Level Trigger"]) {
+                    digitalWrite(relays[i]["pin"], HIGH);
+                } else {
+                    digitalWrite(relays[i]["pin"], LOW);
+                }
             } else {
-                digitalWrite(relays[i]["pin"], LOW);
+                if (relays[i]["Low Level Trigger"]) {
+                    digitalWrite(relays[i]["pin"], LOW);
+                } else {
+                    digitalWrite(relays[i]["pin"], HIGH);
+                }
             }
         } else {
             if (toggleRelay[i] > millis()) {
-                digitalWrite(relays[i]["pin"], LOW);
+                if (relays[i]["Low Level Trigger"]) {
+                    digitalWrite(relays[i]["pin"], LOW);
+                } else {
+                    digitalWrite(relays[i]["pin"], HIGH);
+                }
             } else {
-                digitalWrite(relays[i]["pin"], HIGH);
+                if (relays[i]["Low Level Trigger"]) {
+                    digitalWrite(relays[i]["pin"], HIGH);
+                } else {
+                    digitalWrite(relays[i]["pin"], LOW);
+                }
             }
         }
     }

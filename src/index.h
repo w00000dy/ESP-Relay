@@ -56,13 +56,20 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
                 <p id="space"><b>Space:</b> 0/0 Relays - 0/0 Bytes</p><br>
                 <div id="relayInput" class="row"
                     style="width: 800px; left: 50%; position: absolute; transform: translate(-50%);">
-                    <div class="input-field col s9">
+                    <div class="input-field col s6">
                         <input id="relayName1" type="text" class="validate">
                         <label for="relayName1">Relay name</label>
                     </div>
                     <div class="input-field col s3">
                         <input id="relayPin1" type="number" class="validate">
                         <label for="relayPin1">Pin</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <select id="relayType1">
+                            <option value="low">Low Level Trigger</option>
+                            <option value="high">High Level Trigger</option>
+                        </select>
+                        <label>Relay type</label>
                     </div>
                     <button class="btn waves-effect waves-light" id="saveButton">Save</button>
                 </div>
@@ -117,7 +124,7 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
         console.log("numRelays: " + numRelays);
 
         var divName = document.createElement("div");
-        divName.setAttribute("class", "input-field col s9");
+        divName.setAttribute("class", "input-field col s6");
         var inputName = document.createElement("input");
         inputName.setAttribute("id", "relayName" + numRelays);
         inputName.setAttribute("type", "text");
@@ -140,8 +147,28 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
         divPin.appendChild(inputPin);
         divPin.appendChild(labelPin);
 
+        var divSelect = document.createElement("div");
+        divSelect.setAttribute("class", "input-field col s3");
+        var selectRelayType = document.createElement("select");
+        selectRelayType.setAttribute("id", "relayType" + numRelays);
+        var selectOption1 = document.createElement("option");
+        selectOption1.setAttribute("value", "low");
+        selectOption1.innerText = "Low Level Trigger";
+        var selectOption2 = document.createElement("option");
+        selectOption2.setAttribute("value", "high");
+        selectOption2.innerText = "High Level Trigger";
+        var labelSelect = document.createElement("label");
+        labelSelect.innerText = "Relay type";
+        selectRelayType.appendChild(selectOption1);
+        selectRelayType.appendChild(selectOption2);
+        divSelect.appendChild(selectRelayType);
+        divSelect.appendChild(labelSelect);
+
         relayInput.appendChild(divName);
         relayInput.appendChild(divPin);
+        relayInput.appendChild(divSelect);
+
+        M.AutoInit();
     }
 
     function moveButton() {
@@ -157,6 +184,9 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
                     numRelays--;
                     removeParentNode("relayName" + i);
                     removeParentNode("relayPin" + i);
+                    // remove select element
+                    let element = document.getElementById("relayType" + i).parentNode.parentNode;
+                    element.parentNode.removeChild(element);
                 }
                 document.getElementById("relayName" + index).addEventListener("input", newRelayInput);
             }
@@ -166,7 +196,7 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
 
     function removeParentNode(elementId) {
         // Removes an ParentNode element from the document
-        var element = document.getElementById(elementId).parentNode;
+        let element = document.getElementById(elementId).parentNode;
         element.parentNode.removeChild(element);
     }
 
@@ -207,7 +237,7 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
     function saveSettings() {
         var data = [];
         for (let index = 0; index < (numRelays - 1); index++) {
-            var obj = { "name": document.getElementById("relayName" + (index + 1)).value, "pin": parseInt(document.getElementById("relayPin" + (index + 1)).value) };
+            var obj = { "name": document.getElementById("relayName" + (index + 1)).value, "pin": parseInt(document.getElementById("relayPin" + (index + 1)).value), "Low Level Trigger": (document.getElementById("relayType" + (index + 1)).value === "low") };
             data[index] = obj;
         }
         console.log(data);
