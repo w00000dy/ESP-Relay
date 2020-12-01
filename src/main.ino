@@ -175,7 +175,11 @@ String getJson() {
 void initializePins() {
     for (size_t i = 0; i < relays.size(); i++) {
         pinMode(relays[i]["pin"], OUTPUT);
-        digitalWrite(relays[i]["pin"], HIGH);
+        if (relays[i]["Low Level Trigger"]) {
+            digitalWrite(relays[i]["pin"], HIGH);
+        } else {
+            digitalWrite(relays[i]["pin"], LOW);
+        }
     }
 }
 
