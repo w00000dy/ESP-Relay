@@ -2,6 +2,7 @@
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncWiFiManager.h>
 #include <FS.h>
+#include <SPIFFS.h>
 #include <index.h>
 
 #define TOGGLE_TIME 250
@@ -103,10 +104,10 @@ void setup() {
         StaticJsonDocument<350> info;
         info["esp"]["flashChipSize"] = ESP.getFlashChipSize();
         info["esp"]["flashFreq"] = ESP.getFlashChipSpeed();
-        info["esp"]["ChipId"] = ESP.getChipId();
+        // info["esp"]["ChipId"] = ESP.getChipId();
         info["esp"]["FreeHeap"] = ESP.getFreeHeap();
-        info["esp"]["Vcc"] = ESP.getVcc();
-        info["esp"]["MaxFreeBlockSize"] = ESP.getMaxFreeBlockSize();
+        // info["esp"]["Vcc"] = ESP.getVcc();
+        // info["esp"]["MaxFreeBlockSize"] = ESP.getMaxFreeBlockSize();
         info["esp"]["SketchSize"] = ESP.getSketchSize();
         info["esp"]["SketchMD5"] = ESP.getSketchMD5();
         info["relays"]["Capacity"] = relays.capacity();
