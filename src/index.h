@@ -37,6 +37,18 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
 </head>
 
 <body>
+
+    <div id="crashWarning" class="modal">
+        <div class="modal-content">
+          <h4>Your device has crashed!</h4>
+          <p>You device has crashed. Don't use invalid GPIO pins.</p>
+        </div>
+        <div class="modal-footer">
+          <a class="modal-close waves-effect waves-green btn-flat" onclick="acceptCrash()">Okay</a>
+        </div>
+      </div>
+              
+
     <div class="row">
         <div class="col s12">
             <ul class="tabs" id="tabs-swipe">
@@ -53,7 +65,7 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
         </div>
         <div id="settings" class="col s12" style="text-align: center;">
             <h1 class="center-align">Settings</h5>
-                <p id="space"><b>Space:</b> 0/0 Relays - 0/0 Bytes</p><br>
+                <p id="space"><b>Space:</b> 0/0 Bytes</p><br>
                 <div id="relayInput" class="row"
                     style="width: 800px; left: 50%; position: absolute; transform: translate(-50%);">
                     <div class="input-field col s6">
@@ -82,6 +94,7 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
     M.AutoInit();
     var instance = M.Tabs.getInstance(document.getElementById("tabs-swipe"));
     loadRelays();
+    checkCrash();
 
     function loadRelays() {
         // Get settings from json
@@ -228,7 +241,7 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
 
         xhr.onload = function () {
             var json = JSON.parse(xhr.response);
-            document.getElementById("space").innerHTML = "<b>Space:</b> " + json["relays"]["currentRelays"] + "/" + json["relays"]["maxRelays"] + " Relays - " + json["relays"]["Memory Usage"] + "/" + json["relays"]["Capacity"] + " Bytes";
+            document.getElementById("space").innerHTML = "<b>Space:</b> " + json["relays"]["Memory Usage"] + "/" + json["relays"]["Capacity"] + " Bytes";
         };
 
         xhr.send();
@@ -264,6 +277,28 @@ const char PAGE_index[] PROGMEM = R"=====(<html lang="de">
     function switchRelay(relay) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/switch?r=' + relay + '&on=' + document.getElementById("s" + (relay + 1)).checked, true);
+        xhr.send();
+    }
+
+    // checks if device has crashed
+    function checkCrash() {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/info', true);
+
+        xhr.onload = function () {
+            var json = JSON.parse(xhr.response);
+            if (json["crash"]["crash"] === true) {
+                let instance = M.Modal.getInstance(document.getElementById("crashWarning"));
+                instance.open();
+            }
+        };
+
+        xhr.send();
+    }
+
+    function acceptCrash() {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/crash');
         xhr.send();
     }
 </script>

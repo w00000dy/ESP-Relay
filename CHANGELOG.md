@@ -1,3 +1,8 @@
+## ESP-Relay version 0.4.0
+- added support for esp32
+- support for lager amount of relays
+- added a crash detection
+
 ## ESP-Relay version 0.3.0
 - added option to select relay type
 
