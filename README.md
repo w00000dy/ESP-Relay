@@ -5,4 +5,4 @@ With the web-gui you can controll multiple relays. You can toggle your relays or
 <img src="/images/main.png">
 ## Fully customizable ✏️
 In the settings page you can add your relays and even set the gpio pin.
-<img src="/images/settings.png">
+<img src="/images/ESP-Relay-settings.png">
