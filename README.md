@@ -9,5 +9,5 @@ In the settings page you can add your relays and even set the gpio pin.
 ## ⚙️ Fail-Safe system
 In case of a crash, the software automatically detects it and recovers.
 <img src="/images/crash.png">
-## Installation
+## 📲 Installation
 A deatailed guide how you install this can be found [here](https://github.com/WoodyLetsCode/ESP-Relay/wiki).
