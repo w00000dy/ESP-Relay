@@ -1,5 +1,5 @@
 # ESP-Relay 🔌
-A implementation of an ESP8266 webserver to control multiple relays.
+A implementation of an ESP8266 or ESP32 webserver to control multiple relays.
 ## GUI 🖥️
 With the web-gui you can controll multiple relays. You can toggle your relays or either switch them on or off.
 <img src="/images/main.png">
