@@ -11,3 +11,7 @@ In case of a crash, the software automatically detects it and recovers.
 <img src="/images/crash.png">
 ## 📲 Installation
 A deatailed guide how you install this can be found [here](https://github.com/WoodyLetsCode/ESP-Relay/wiki).
+## ✌️ Credits
+- [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
+- [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
+- [ESPAsyncWiFiManager](https://github.com/alanswx/ESPAsyncWiFiManager)
