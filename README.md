@@ -15,3 +15,4 @@ A deatailed guide how you install this can be found [here](https://github.com/Wo
 - [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 - [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
 - [ESPAsyncWiFiManager](https://github.com/alanswx/ESPAsyncWiFiManager)
+- Materialize
